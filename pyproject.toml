@@ -1,0 +1,163 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wavemaker-agent-framework"
+version = "0.1.0"
+description = "A framework for building AgentField-compatible AI agents with reduced code duplication"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Proprietary"}
+authors = [
+    {name = "NoLimitz Lab", email = "contact@nolimitzlab.com"}
+]
+keywords = ["agentfield", "ai", "agents", "framework", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    # Core dependencies
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+
+    # HTTP client
+    "aiohttp>=3.9.1",
+    "httpx>=0.25.2",
+
+    # LLM integration
+    "openai>=1.6.1",
+
+    # Langfuse integration (optional)
+    "langfuse>=2.0.0",
+
+    # AgentField integration
+    "agentfield>=0.1.8",
+
+    # Utilities
+    "pyyaml>=6.0.1",
+    "jinja2>=3.1.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.4.3",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "aioresponses>=0.7.6",
+    "faker>=20.1.0",
+    "freezegun>=1.4.0",
+
+    # Code quality
+    "black>=23.12.0",
+    "ruff>=0.1.8",
+    "mypy>=1.7.1",
+
+    # Documentation
+    "mkdocs>=1.5.3",
+    "mkdocs-material>=9.5.0",
+]
+
+cli = [
+    "click>=8.1.7",
+    "rich>=13.7.0",
+]
+
+[project.scripts]
+wavemaker-scaffold = "wavemaker_agent_framework.cli.scaffold:main"
+
+[project.urls]
+Homepage = "https://github.com/nolimitzlab/wavemaker-agent-framework"
+Documentation = "https://github.com/nolimitzlab/wavemaker-agent-framework/blob/main/README.md"
+Repository = "https://github.com/nolimitzlab/wavemaker-agent-framework"
+
+[tool.setuptools]
+packages = ["wavemaker_agent_framework"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+wavemaker_agent_framework = ["py.typed", "templates/*.j2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--cov=wavemaker_agent_framework",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py311', 'py312']
+include = '\\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+
+[[tool.mypy.overrides]]
+module = [
+    "langfuse.*",
+    "agentfield.*",
+    "aioresponses.*",
+]
+ignore_missing_imports = true
