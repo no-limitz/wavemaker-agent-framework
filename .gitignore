@@ -61,3 +61,4 @@ docs/_build/
 # Environment
 .env
 .env.local
+.claude/settings.local.json
