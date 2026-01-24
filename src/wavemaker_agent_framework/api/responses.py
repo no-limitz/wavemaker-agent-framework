@@ -22,20 +22,22 @@ class ErrorResponse(BaseModel):
     Used to represent error details in API responses.
     """
 
-    error: str = Field(..., description="Error type/code")
+    success: bool = Field(default=False, description="Always false for error responses")
+    error_code: str = Field(..., description="Error type/code")
     message: str = Field(..., description="Human-readable error message")
     details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
+    http_status: int = Field(default=500, description="HTTP status code")
     timestamp: datetime = Field(default_factory=datetime.now, description="Error timestamp")
-    request_id: Optional[str] = Field(None, description="Request ID for tracking")
 
     class Config:
         json_schema_extra = {
             "example": {
-                "error": "validation_error",
+                "success": False,
+                "error_code": "validation_error",
                 "message": "Invalid input provided",
                 "details": {"field": "url", "issue": "Invalid URL format"},
+                "http_status": 400,
                 "timestamp": "2024-01-15T10:30:00Z",
-                "request_id": "req_123abc",
             }
         }
 
@@ -134,22 +136,22 @@ def create_success_response(
 
 
 def create_error_response(
-    error: str,
+    error_code: str,
     message: str,
     details: Optional[Dict[str, Any]] = None,
-    request_id: Optional[str] = None,
-) -> ErrorResponseWrapper:
+    http_status: int = 500,
+) -> ErrorResponse:
     """
     Create a standardized error response.
 
     Args:
-        error: Error type/code (e.g., "validation_error", "not_found", "internal_error")
+        error_code: Error type/code (e.g., "validation_error", "not_found", "internal_error")
         message: Human-readable error message
         details: Optional dictionary with additional error context
-        request_id: Optional request ID for tracking
+        http_status: HTTP status code (default: 500)
 
     Returns:
-        ErrorResponseWrapper: Wrapped error response
+        ErrorResponse: Error response
 
     Example:
         ```python
@@ -157,26 +159,26 @@ def create_error_response(
 
         # Simple error
         return create_error_response(
-            error="invalid_url",
-            message="The provided URL is not valid"
+            error_code="invalid_url",
+            message="The provided URL is not valid",
+            http_status=400
         )
 
         # Error with details
         return create_error_response(
-            error="validation_error",
+            error_code="validation_error",
             message="Invalid input provided",
             details={"field": "max_pages", "issue": "Must be between 1 and 20"},
-            request_id="req_abc123"
+            http_status=400
         )
         ```
     """
-    error_obj = ErrorResponse(
-        error=error,
+    return ErrorResponse(
+        error_code=error_code,
         message=message,
         details=details,
-        request_id=request_id,
+        http_status=http_status,
     )
-    return ErrorResponseWrapper(error=error_obj)
 
 
 # =============================================================================
@@ -192,23 +194,24 @@ class ErrorCodes:
     """
 
     # Client errors (4xx)
-    VALIDATION_ERROR = "validation_error"
-    INVALID_INPUT = "invalid_input"
-    NOT_FOUND = "not_found"
-    UNAUTHORIZED = "unauthorized"
-    FORBIDDEN = "forbidden"
-    RATE_LIMIT_EXCEEDED = "rate_limit_exceeded"
+    VALIDATION_ERROR = "VALIDATION_ERROR"
+    INVALID_INPUT = "INVALID_INPUT"
+    NOT_FOUND = "NOT_FOUND"
+    UNAUTHORIZED = "UNAUTHORIZED"
+    FORBIDDEN = "FORBIDDEN"
+    RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
 
     # Server errors (5xx)
-    INTERNAL_ERROR = "internal_error"
-    SERVICE_UNAVAILABLE = "service_unavailable"
-    TIMEOUT = "timeout"
-    LLM_ERROR = "llm_error"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
+    TIMEOUT = "TIMEOUT"
+    LLM_ERROR = "LLM_ERROR"
+    API_ERROR = "API_ERROR"
 
     # Agent-specific errors
-    ANALYSIS_FAILED = "analysis_failed"
-    EXTRACTION_FAILED = "extraction_failed"
-    PROCESSING_ERROR = "processing_error"
+    ANALYSIS_FAILED = "ANALYSIS_FAILED"
+    EXTRACTION_FAILED = "EXTRACTION_FAILED"
+    PROCESSING_ERROR = "PROCESSING_ERROR"
 
 
 # Export all response types
