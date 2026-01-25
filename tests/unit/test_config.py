@@ -204,7 +204,7 @@ class TestAgentConfigDirectInstantiation:
             langfuse_secret_key="sk-test",
             langfuse_host="https://langfuse.example.com",
             agentfield_control_plane_url="http://localhost:8000",
-            port=8002,
+            port=8001,
             environment="production",
             log_level="WARNING",
         )
