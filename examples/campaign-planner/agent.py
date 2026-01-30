@@ -11,7 +11,7 @@ from openai import AsyncOpenAI
 from wavemaker_agent_framework.core import (
     AgentRuntime,
     AgentExecutionInput,
-    AgentExecutionResult,
+    AgentExecutionOutput,
     create_default_runtime,
 )
 from wavemaker_agent_framework.context import EntityContext, BrandSummary, BrandVoice
@@ -43,7 +43,7 @@ async def run_campaign_planner(
     prompt: str,
     context: EntityContext,
     openai_api_key: str | None = None,
-) -> AgentExecutionResult:
+) -> AgentExecutionOutput:
     """
     Run the campaign planner agent.
 
@@ -53,7 +53,7 @@ async def run_campaign_planner(
         openai_api_key: Optional OpenAI API key (uses env var if not provided)
 
     Returns:
-        AgentExecutionResult with created campaigns and content
+        AgentExecutionOutput with created campaigns and content
     """
     # Create OpenAI client
     client = AsyncOpenAI(api_key=openai_api_key)
@@ -92,22 +92,19 @@ def create_sample_context() -> EntityContext:
             BrandSummary(
                 id="brand_demo_456",
                 name="TechStartup Inc",
-                industry="Technology",
+                slug="techstartup-inc",
                 description="B2B SaaS company focused on productivity tools",
             )
         ],
         brandVoice=BrandVoice(
             tone="professional",
-            style="informative yet approachable",
+            personality=["innovative", "helpful", "straightforward"],
             vocabulary=["innovative", "efficient", "collaborative", "streamlined"],
-            avoid=["jargon", "buzzwords", "aggressive sales language"],
-            examples=[
-                "Discover how teams are saving 10 hours per week with our platform.",
-                "We believe great tools should get out of your way and let you focus on what matters.",
-            ],
+            avoidWords=["jargon", "buzzwords", "aggressive sales language"],
+            targetAudience="B2B decision makers and team leads at growing companies",
+            brandValues=["efficiency", "collaboration", "simplicity"],
         ),
         campaigns=[],
-        recentContent=[],
     )
 
 

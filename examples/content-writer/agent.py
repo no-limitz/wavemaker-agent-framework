@@ -12,7 +12,7 @@ from openai import AsyncOpenAI
 from wavemaker_agent_framework.core import (
     AgentRuntime,
     AgentExecutionInput,
-    AgentExecutionResult,
+    AgentExecutionOutput,
     create_default_runtime,
 )
 from wavemaker_agent_framework.context import (
@@ -60,7 +60,7 @@ async def run_content_writer(
     content_type: ContentType = "SOCIAL_POST",
     channel: Channel = "linkedin",
     openai_api_key: str | None = None,
-) -> AgentExecutionResult:
+) -> AgentExecutionOutput:
     """
     Run the content writer agent.
 
@@ -115,7 +115,7 @@ async def create_content_batch(
     prompts: list[dict],
     context: EntityContext,
     openai_api_key: str | None = None,
-) -> list[AgentExecutionResult]:
+) -> list[AgentExecutionOutput]:
     """
     Create multiple pieces of content in sequence.
 
@@ -151,13 +151,13 @@ def create_sample_context() -> EntityContext:
             BrandSummary(
                 id="brand_demo_456",
                 name="EcoTech Solutions",
-                industry="Sustainability",
+                slug="ecotech-solutions",
                 description="Sustainable technology solutions for modern businesses",
             )
         ],
         brandVoice=BrandVoice(
             tone="optimistic and empowering",
-            style="clear, action-oriented, environmentally conscious",
+            personality=["innovative", "trustworthy", "forward-thinking"],
             vocabulary=[
                 "sustainable",
                 "innovative",
@@ -165,16 +165,14 @@ def create_sample_context() -> EntityContext:
                 "future-forward",
                 "responsible",
             ],
-            avoid=[
+            avoidWords=[
                 "greenwashing",
                 "guilt-tripping",
                 "preachy",
                 "doom and gloom",
             ],
-            examples=[
-                "Small changes, big impact. See how companies are reducing their carbon footprint by 40%.",
-                "The future of business is green. And it's more profitable than you think.",
-            ],
+            targetAudience="Sustainability officers and CFOs at mid-size companies",
+            brandValues=["sustainability", "innovation", "transparency"],
         ),
         campaigns=[
             CampaignSummary(
@@ -182,11 +180,8 @@ def create_sample_context() -> EntityContext:
                 name="Earth Month 2024",
                 status="ACTIVE",
                 channels=["linkedin", "twitter", "email"],
-                startDate="2024-04-01",
-                endDate="2024-04-30",
             )
         ],
-        recentContent=[],
     )
 
 
