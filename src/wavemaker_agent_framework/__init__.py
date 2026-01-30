@@ -30,6 +30,7 @@ from wavemaker_agent_framework.context import (
     CampaignSummary,
     ContentSummary,
     BrandVoiceSettings,
+    BrandVoice,  # Alias for BrandVoiceSettings
     ContextInjector,
 )
 
@@ -66,6 +67,7 @@ __all__ = [
     "CampaignSummary",
     "ContentSummary",
     "BrandVoiceSettings",
+    "BrandVoice",
     "ContextInjector",
     # Tools
     "ToolRegistry",

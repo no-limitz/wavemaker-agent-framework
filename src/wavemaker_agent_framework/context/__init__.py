@@ -14,8 +14,12 @@ from wavemaker_agent_framework.context.entity_context import (
 )
 from wavemaker_agent_framework.context.context_injector import ContextInjector
 
+# Alias for convenience
+BrandVoice = BrandVoiceSettings
+
 __all__ = [
     "BrandVoiceSettings",
+    "BrandVoice",  # Alias for BrandVoiceSettings
     "BrandSummary",
     "CampaignSummary",
     "ContentSummary",
