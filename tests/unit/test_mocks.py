@@ -8,7 +8,7 @@ import pytest
 import json
 from unittest.mock import MagicMock
 from openai import RateLimitError, AuthenticationError, APITimeoutError, APIError
-from wavemaker_agent_framework.testing.mocks.openai import (
+from bigripple.testing.mocks.openai import (
     MockOpenAIResponse,
     MockOpenAIClientBuilder,
     create_mock_openai_client,

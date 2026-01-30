@@ -8,22 +8,22 @@ and operation extraction.
 import pytest
 from unittest.mock import MagicMock, AsyncMock
 
-from wavemaker_agent_framework.context.entity_context import EntityContext
-from wavemaker_agent_framework.context.context_injector import ContextInjector
-from wavemaker_agent_framework.tools.registry import ToolRegistry
-from wavemaker_agent_framework.tools.bigripple import create_bigripple_registry
-from wavemaker_agent_framework.tools.executor import ToolExecutor
-from wavemaker_agent_framework.operations.extractor import OperationExtractor
-from wavemaker_agent_framework.core.agent_runtime import (
+from bigripple.context.entity_context import EntityContext
+from bigripple.context.context_injector import ContextInjector
+from bigripple.tools.registry import ToolRegistry
+from bigripple.tools.bigripple import create_bigripple_registry
+from bigripple.tools.executor import ToolExecutor
+from bigripple.operations.extractor import OperationExtractor
+from bigripple.core.agent_runtime import (
     AgentRuntime,
     AgentExecutionInput,
     create_default_runtime,
 )
-from wavemaker_agent_framework.testing.mocks.bigripple import (
+from bigripple.testing.mocks.bigripple import (
     create_mock_llm_client,
     create_mock_tool_call,
 )
-from wavemaker_agent_framework.testing.fixtures.context_fixtures import (
+from bigripple.testing.fixtures.context_fixtures import (
     sample_entity_context,
     sample_brand_voice,
 )

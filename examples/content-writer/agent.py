@@ -9,7 +9,7 @@ import os
 from typing import Literal
 from dotenv import load_dotenv
 
-from wavemaker_agent_framework import (
+from bigripple import (
     BigRippleAgent,
     AgentResult,
     EntityContext,

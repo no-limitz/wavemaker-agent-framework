@@ -7,7 +7,7 @@ Tests OpenAI client creation, Langfuse wrapping, and error handling.
 import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 from openai import AsyncOpenAI
-from wavemaker_agent_framework.core.client import LLMClientFactory
+from bigripple.core.client import LLMClientFactory
 
 
 class TestLLMClientFactoryCreate:
@@ -51,8 +51,8 @@ class TestLLMClientFactoryCreate:
     @pytest.mark.asyncio
     async def test_creates_langfuse_wrapped_client(self):
         """Test creating Langfuse-wrapped client with credentials."""
-        with patch("wavemaker_agent_framework.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
-             patch("wavemaker_agent_framework.core.client.LANGFUSE_AVAILABLE", True):
+        with patch("bigripple.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
+             patch("bigripple.core.client.LANGFUSE_AVAILABLE", True):
             mock_client = MagicMock()
             mock_langfuse_client.return_value = mock_client
 
@@ -71,7 +71,7 @@ class TestLLMClientFactoryCreate:
     @pytest.mark.asyncio
     async def test_falls_back_to_standard_when_langfuse_unavailable(self):
         """Test fallback to standard client when Langfuse not installed."""
-        with patch("wavemaker_agent_framework.core.client.LANGFUSE_AVAILABLE", False):
+        with patch("bigripple.core.client.LANGFUSE_AVAILABLE", False):
             client = await LLMClientFactory.create(
                 api_key="sk-test-key",
                 enable_langfuse=True,
@@ -89,7 +89,7 @@ class TestLLMClientFactoryFromConfig:
     @pytest.mark.asyncio
     async def test_creates_client_from_config(self, mock_env_vars):
         """Test creating client from AgentConfig object."""
-        from wavemaker_agent_framework.core.config import AgentConfig
+        from bigripple.core.config import AgentConfig
 
         config = AgentConfig.from_env()
         client = await LLMClientFactory.create_from_config(config)
@@ -99,7 +99,7 @@ class TestLLMClientFactoryFromConfig:
     @pytest.mark.asyncio
     async def test_uses_config_base_url(self, mock_env_vars, monkeypatch):
         """Test that custom base URL from config is used."""
-        from wavemaker_agent_framework.core.config import AgentConfig
+        from bigripple.core.config import AgentConfig
 
         monkeypatch.setenv("OPENAI_BASE_URL", "https://litellm.example.com")
         config = AgentConfig.from_env()
@@ -112,12 +112,12 @@ class TestLLMClientFactoryFromConfig:
     @pytest.mark.asyncio
     async def test_enables_langfuse_from_config(self, mock_env_vars):
         """Test that Langfuse is enabled when config has credentials."""
-        from wavemaker_agent_framework.core.config import AgentConfig
+        from bigripple.core.config import AgentConfig
 
         config = AgentConfig.from_env()
 
-        with patch("wavemaker_agent_framework.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
-             patch("wavemaker_agent_framework.core.client.LANGFUSE_AVAILABLE", True):
+        with patch("bigripple.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
+             patch("bigripple.core.client.LANGFUSE_AVAILABLE", True):
             mock_client = MagicMock()
             mock_langfuse_client.return_value = mock_client
 
@@ -151,8 +151,8 @@ class TestLLMClientFactoryErrorHandling:
     @pytest.mark.asyncio
     async def test_handles_langfuse_creation_error(self):
         """Test handling when Langfuse client creation fails."""
-        with patch("wavemaker_agent_framework.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
-             patch("wavemaker_agent_framework.core.client.LANGFUSE_AVAILABLE", True):
+        with patch("bigripple.core.client.LangfuseAsyncOpenAI") as mock_langfuse_client, \
+             patch("bigripple.core.client.LANGFUSE_AVAILABLE", True):
             mock_langfuse_client.side_effect = Exception("Langfuse error")
 
             client = await LLMClientFactory.create(
@@ -199,7 +199,7 @@ class TestLLMClientFactoryIntegration:
     @pytest.mark.asyncio
     async def test_full_workflow_with_config(self, mock_env_vars):
         """Test complete workflow: env vars -> config -> client."""
-        from wavemaker_agent_framework.core.config import AgentConfig
+        from bigripple.core.config import AgentConfig
 
         # Load config from environment
         config = AgentConfig.from_env()
@@ -213,7 +213,7 @@ class TestLLMClientFactoryIntegration:
     @pytest.mark.asyncio
     async def test_full_workflow_with_custom_settings(self, mock_env_vars, monkeypatch):
         """Test workflow with custom settings."""
-        from wavemaker_agent_framework.core.config import AgentConfig
+        from bigripple.core.config import AgentConfig
 
         # Set custom settings
         monkeypatch.setenv("OPENAI_MODEL", "gpt-4o")

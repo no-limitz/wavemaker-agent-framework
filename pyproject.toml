@@ -3,16 +3,16 @@ requires = ["setuptools>=68.0,<77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wavemaker-agent-framework"
-version = "0.1.0"
-description = "A framework for building AgentField-compatible AI agents with reduced code duplication"
+name = "bigripple"
+version = "0.2.0"
+description = "A framework for building BigRipple-compatible AI agents using Strands SDK"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.11"
 authors = [
     {name = "NoLimitz Lab", email = "contact@nolimitzlab.com"}
 ]
-keywords = ["agentfield", "ai", "agents", "framework", "llm"]
+keywords = ["bigripple", "ai", "agents", "framework", "llm", "strands"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -73,7 +73,7 @@ cli = [
 ]
 
 [project.scripts]
-wavemaker-scaffold = "wavemaker_agent_framework.cli.scaffold:main"
+bigripple-scaffold = "bigripple.cli.scaffold:main"
 
 [project.urls]
 Homepage = "https://github.com/nolimitzlab/wavemaker-agent-framework"
@@ -81,11 +81,11 @@ Documentation = "https://github.com/nolimitzlab/wavemaker-agent-framework/blob/m
 Repository = "https://github.com/nolimitzlab/wavemaker-agent-framework"
 
 [tool.setuptools]
-packages = ["wavemaker_agent_framework"]
+packages = ["bigripple"]
 package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
-wavemaker_agent_framework = ["py.typed", "templates/*.j2"]
+bigripple = ["py.typed", "templates/*.j2"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -96,7 +96,7 @@ asyncio_mode = "auto"
 addopts = [
     "-v",
     "--strict-markers",
-    "--cov=wavemaker_agent_framework",
+    "--cov=bigripple",
     "--cov-report=term-missing",
     "--cov-report=html",
 ]

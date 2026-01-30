@@ -7,7 +7,7 @@ Tests SuccessResponse, ErrorResponse, and helper functions.
 import pytest
 from datetime import datetime
 from pydantic import ValidationError
-from wavemaker_agent_framework.api.responses import (
+from bigripple.api.responses import (
     SuccessResponse,
     ErrorResponse,
     ErrorCodes,
