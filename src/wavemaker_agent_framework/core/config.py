@@ -50,9 +50,21 @@ class AgentConfig(BaseModel):
     @field_validator("langfuse_host")
     @classmethod
     def normalize_langfuse_host(cls, v: str) -> str:
-        """Ensure Langfuse host has protocol prefix."""
-        if v and not v.startswith(("http://", "https://")):
-            return f"https://{v}"
+        """Ensure Langfuse host has protocol prefix and no trailing slash."""
+        if v:
+            # Strip trailing slash
+            v = v.rstrip("/")
+            # Add protocol if missing
+            if not v.startswith(("http://", "https://")):
+                v = f"https://{v}"
+        return v
+
+    @field_validator("openai_api_key")
+    @classmethod
+    def validate_api_key(cls, v: str) -> str:
+        """Validate that API key is not empty."""
+        if not v or not v.strip():
+            raise ValueError("openai_api_key is required and cannot be empty")
         return v
 
     @field_validator("log_level")
