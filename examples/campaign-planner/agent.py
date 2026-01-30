@@ -8,7 +8,7 @@ using the simplified Strands-based wavemaker-agent-framework.
 import os
 from dotenv import load_dotenv
 
-from bigripple import (
+from bigripple_agent_framework import (
     BigRippleAgent,
     EntityContext,
     BrandSummary,

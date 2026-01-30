@@ -1,23 +1,21 @@
-"""
-Pytest configuration for wavemaker-agent-framework tests.
+"""Testing utilities for wavemaker agent framework."""
 
-Imports all fixtures from the framework's testing module to make them
-available to the test suite.
-"""
-
-# Import all fixtures from the framework
-from bigripple_agent_framework.testing import (
-    # Base pytest fixtures
+# Base pytest fixtures
+from bigripple_agent_framework.testing.base_fixtures import (
     event_loop,
+    fastapi_client,
     mock_aiohttp,
-    mock_openai_response,
-    mock_openai_client,
     mock_env_vars,
-    sample_html_simple,
+    mock_openai_client,
+    mock_openai_response,
     sample_html_complex,
     sample_html_malformed,
     sample_html_minimal,
-    # BigRipple context fixtures
+    sample_html_simple,
+)
+
+# BigRipple context fixtures
+from bigripple_agent_framework.testing.fixtures import (
     sample_brand_voice,
     sample_brand_summary,
     sample_campaign_summary,
@@ -28,17 +26,24 @@ from bigripple_agent_framework.testing import (
     sample_rag_context,
 )
 
-# Make fixtures available to tests
 __all__ = [
+    # Event loop
     "event_loop",
+    # HTTP mocking
     "mock_aiohttp",
+    # OpenAI mocking
     "mock_openai_response",
     "mock_openai_client",
+    # FastAPI testing
+    "fastapi_client",
+    # Environment
     "mock_env_vars",
+    # Sample HTML
     "sample_html_simple",
     "sample_html_complex",
     "sample_html_malformed",
     "sample_html_minimal",
+    # BigRipple context fixtures
     "sample_brand_voice",
     "sample_brand_summary",
     "sample_campaign_summary",

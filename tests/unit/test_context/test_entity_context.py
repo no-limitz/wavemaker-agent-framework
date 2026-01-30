@@ -10,7 +10,7 @@ import pytest
 from datetime import datetime
 
 # Import directly from module to avoid langfuse import in main __init__
-from bigripple.context.entity_context import (
+from bigripple_agent_framework.context.entity_context import (
     BrandVoiceSettings,
     BrandSummary,
     CampaignSummary,

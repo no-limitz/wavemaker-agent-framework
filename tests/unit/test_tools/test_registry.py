@@ -9,13 +9,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'sr
 import pytest
 
 # Import directly from modules to avoid langfuse import in main __init__
-from bigripple.tools.definitions import (
+from bigripple_agent_framework.tools.definitions import (
     ToolDefinition,
     ToolParameter,
     ToolResult,
     ToolCategory,
 )
-from bigripple.tools.registry import ToolRegistry
+from bigripple_agent_framework.tools.registry import ToolRegistry
 
 
 class TestToolRegistry:

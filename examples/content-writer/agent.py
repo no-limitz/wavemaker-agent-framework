@@ -9,7 +9,7 @@ import os
 from typing import Literal
 from dotenv import load_dotenv
 
-from bigripple import (
+from bigripple_agent_framework import (
     BigRippleAgent,
     AgentResult,
     EntityContext,

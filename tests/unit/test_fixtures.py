@@ -266,14 +266,14 @@ class TestFastAPIClientFixture:
 
     def test_fastapi_client_is_exported(self):
         """Test that fastapi_client fixture is available for import."""
-        from bigripple.testing.fixtures import fastapi_client
+        from bigripple_agent_framework.testing.fixtures import fastapi_client
 
         # Verify it's a fixture function (has pytest marker)
         assert hasattr(fastapi_client, "pytestmark") or callable(fastapi_client)
 
     def test_fastapi_client_docstring_has_usage_example(self):
         """Test that fastapi_client has proper documentation."""
-        from bigripple.testing.fixtures import fastapi_client
+        from bigripple_agent_framework.testing.fixtures import fastapi_client
 
         # Verify the docstring explains how to override
         assert fastapi_client.__doc__ is not None
@@ -292,7 +292,7 @@ class TestFixtureIntegration:
     ):
         """Test that multiple fixtures work together."""
         import os
-        from bigripple.core.config import AgentConfig
+        from bigripple_agent_framework.core.config import AgentConfig
 
         # Environment variables are set
         assert os.getenv("OPENAI_API_KEY") is not None

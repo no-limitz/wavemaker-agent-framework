@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'sr
 import pytest
 
 # Import directly from module to avoid langfuse import in main __init__
-from bigripple.operations.extractor import OperationExtractor
+from bigripple_agent_framework.operations.extractor import OperationExtractor
 
 
 class TestOperationExtractor:
