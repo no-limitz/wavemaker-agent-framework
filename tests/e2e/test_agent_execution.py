@@ -9,18 +9,18 @@ import pytest
 import json
 from unittest.mock import MagicMock, AsyncMock
 
-from wavemaker_agent_framework.context.entity_context import EntityContext
-from wavemaker_agent_framework.context.context_injector import ContextInjector
-from wavemaker_agent_framework.tools.registry import ToolRegistry
-from wavemaker_agent_framework.tools.bigripple import create_bigripple_registry
-from wavemaker_agent_framework.operations.extractor import OperationExtractor
-from wavemaker_agent_framework.core.agent_runtime import AgentRuntime, AgentExecutionInput
-from wavemaker_agent_framework.testing.mocks.bigripple import (
+from bigripple_agent_framework.context.entity_context import EntityContext
+from bigripple_agent_framework.context.context_injector import ContextInjector
+from bigripple_agent_framework.tools.registry import ToolRegistry
+from bigripple_agent_framework.tools.bigripple import create_bigripple_registry
+from bigripple_agent_framework.operations.extractor import OperationExtractor
+from bigripple_agent_framework.core.agent_runtime import AgentRuntime, AgentExecutionInput
+from bigripple_agent_framework.testing.mocks.bigripple import (
     MockBigRippleClient,
     create_mock_llm_client,
     create_mock_tool_call,
 )
-from wavemaker_agent_framework.testing.fixtures.context_fixtures import (
+from bigripple_agent_framework.testing.fixtures.context_fixtures import (
     sample_entity_context,
     sample_entity_context_json,
     sample_execution_request_json,

@@ -2,26 +2,22 @@
 Content Writer Agent Example
 
 This example demonstrates how to build a content writing agent
-that creates brand-aligned content using the wavemaker-agent-framework.
+using the simplified Strands-based wavemaker-agent-framework.
 """
 
-import asyncio
+import os
 from typing import Literal
-from openai import AsyncOpenAI
+from dotenv import load_dotenv
 
-from wavemaker_agent_framework.core import (
-    AgentRuntime,
-    AgentExecutionInput,
-    AgentExecutionOutput,
-    create_default_runtime,
-)
-from wavemaker_agent_framework.context import (
+from bigripple_agent_framework import (
+    BigRippleAgent,
+    AgentResult,
     EntityContext,
     BrandSummary,
     BrandVoice,
     CampaignSummary,
+    create_content,
 )
-from wavemaker_agent_framework.tools.bigripple import create_bigripple_registry
 
 
 # System prompt for the content writer
@@ -46,7 +42,7 @@ Channel-specific guidance:
 - Email: Personal, clear CTAs, scannable format
 - Blog: SEO-friendly, comprehensive, include subheadings
 
-You have access to tools to create content in BigRipple.
+You have access to the create_content tool to save content in BigRipple.
 Always use the provided brand_id when creating entities."""
 
 
@@ -54,32 +50,44 @@ ContentType = Literal["SOCIAL_POST", "BLOG_POST", "EMAIL", "AD_COPY", "NEWSLETTE
 Channel = Literal["linkedin", "twitter", "email", "blog", "facebook", "instagram"]
 
 
-async def run_content_writer(
+def create_content_agent(api_key: str | None = None) -> BigRippleAgent:
+    """Create a content writer agent.
+
+    Args:
+        api_key: Optional OpenAI API key (uses env var if not provided)
+
+    Returns:
+        Configured BigRippleAgent for content writing
+    """
+    return BigRippleAgent(
+        system_prompt=CONTENT_WRITER_PROMPT,
+        api_key=api_key,
+        model_id="gpt-4o",
+        temperature=0.8,  # Slightly higher for creative writing
+        tools=[create_content],
+    )
+
+
+def run_content_writer(
+    agent: BigRippleAgent,
     prompt: str,
     context: EntityContext,
     content_type: ContentType = "SOCIAL_POST",
     channel: Channel = "linkedin",
-    openai_api_key: str | None = None,
-) -> AgentExecutionOutput:
+) -> AgentResult:
     """
     Run the content writer agent.
 
     Args:
+        agent: The BigRipple content writer agent
         prompt: User's content request
         context: Entity context from BigRipple
         content_type: Type of content to create
         channel: Target channel for the content
-        openai_api_key: Optional OpenAI API key
 
     Returns:
-        AgentExecutionResult with created content
+        AgentResult with created content
     """
-    # Create OpenAI client
-    client = AsyncOpenAI(api_key=openai_api_key)
-
-    # Create runtime with BigRipple tools
-    runtime = create_default_runtime(client, include_bigripple_tools=True)
-
     # Enhanced prompt with content specifications
     full_prompt = f"""
 Content Type: {content_type}
@@ -88,58 +96,14 @@ Target Channel: {channel}
 Request: {prompt}
 
 Please create content that matches these specifications and follows the brand guidelines.
+Use the create_content tool to save the content.
 """
 
-    # Prepare execution input
-    input_data = AgentExecutionInput(
-        input_data={"prompt": full_prompt},
+    return agent.run(
+        prompt=full_prompt,
         context=context,
         execution_id=f"content_writer_{context.user_id}",
-        system_prompt=CONTENT_WRITER_PROMPT,
-        enabled_tools=[
-            "bigripple.content.create",
-            "bigripple.knowledge.guidelines",
-            "bigripple.knowledge.search",
-        ],
-        model="gpt-4o",
-        temperature=0.8,  # Slightly higher for creative writing
     )
-
-    # Execute the agent
-    result = await runtime.execute(input_data)
-
-    return result
-
-
-async def create_content_batch(
-    prompts: list[dict],
-    context: EntityContext,
-    openai_api_key: str | None = None,
-) -> list[AgentExecutionOutput]:
-    """
-    Create multiple pieces of content in sequence.
-
-    Args:
-        prompts: List of dicts with 'prompt', 'content_type', 'channel' keys
-        context: Entity context from BigRipple
-        openai_api_key: Optional OpenAI API key
-
-    Returns:
-        List of AgentExecutionResults
-    """
-    results = []
-
-    for item in prompts:
-        result = await run_content_writer(
-            prompt=item["prompt"],
-            context=context,
-            content_type=item.get("content_type", "SOCIAL_POST"),
-            channel=item.get("channel", "linkedin"),
-            openai_api_key=openai_api_key,
-        )
-        results.append(result)
-
-    return results
 
 
 def create_sample_context() -> EntityContext:
@@ -185,10 +149,16 @@ def create_sample_context() -> EntityContext:
     )
 
 
-async def main():
+def main():
     """Run the content writer example."""
-    print("Content Writer Agent Example")
+    # Load environment variables
+    load_dotenv(os.path.expanduser("~/Projects/big-ripple/.env"))
+
+    print("Content Writer Agent Example (Strands SDK)")
     print("=" * 50)
+
+    # Create the agent
+    agent = create_content_agent(api_key=os.getenv("OPENAI_API_KEY"))
 
     # Create sample context
     context = create_sample_context()
@@ -211,7 +181,8 @@ async def main():
     print("\n" + "-" * 50)
 
     try:
-        result = await run_content_writer(
+        result = run_content_writer(
+            agent=agent,
             prompt=prompt,
             context=context,
             content_type="SOCIAL_POST",
@@ -221,6 +192,7 @@ async def main():
         if result.success:
             print("\nGenerated Content:")
             print(result.output)
+            print(f"\nDuration: {result.duration_ms}ms")
 
             if result.entity_operations:
                 print(f"\nCreated {len(result.entity_operations)} content item(s)")
@@ -235,28 +207,6 @@ async def main():
         print(f"\nError: {e}")
         print("\nNote: This example requires a valid OPENAI_API_KEY environment variable.")
 
-    # Example: Batch content creation
-    print("\n\n--- Batch Content Creation ---\n")
-
-    batch_prompts = [
-        {
-            "prompt": "Create a teaser tweet about the carbon calculator launch",
-            "content_type": "SOCIAL_POST",
-            "channel": "twitter",
-        },
-        {
-            "prompt": "Write an email subject line and preview text for the calculator announcement",
-            "content_type": "EMAIL",
-            "channel": "email",
-        },
-    ]
-
-    print("Batch requests:")
-    for i, p in enumerate(batch_prompts, 1):
-        print(f"  {i}. {p['channel']}: {p['prompt'][:50]}...")
-
-    print("\n(Batch execution would run here with valid API key)")
-
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

@@ -9,14 +9,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'sr
 import pytest
 
 # Import directly from modules to avoid langfuse import in main __init__
-from wavemaker_agent_framework.context.entity_context import (
+from bigripple_agent_framework.context.entity_context import (
     BrandVoiceSettings,
     BrandSummary,
     CampaignSummary,
     ContentSummary,
     EntityContext,
 )
-from wavemaker_agent_framework.context.context_injector import ContextInjector
+from bigripple_agent_framework.context.context_injector import ContextInjector
 
 
 class TestContextInjector:

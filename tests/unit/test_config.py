@@ -6,7 +6,7 @@ Tests environment variable loading, validation, and helper properties.
 
 import pytest
 from pydantic import ValidationError
-from wavemaker_agent_framework.core.config import AgentConfig
+from bigripple_agent_framework.core.config import AgentConfig
 
 
 class TestAgentConfigFromEnv:
