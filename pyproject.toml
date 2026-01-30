@@ -32,8 +32,8 @@ dependencies = [
     "aiohttp>=3.9.1",
     "httpx>=0.25.2",
 
-    # LLM integration
-    "openai>=1.6.1",
+    # Strands Agents SDK (replaces custom runtime)
+    "strands-agents>=0.1.0",
 
     # Langfuse integration (optional)
     "langfuse>=2.0.0",

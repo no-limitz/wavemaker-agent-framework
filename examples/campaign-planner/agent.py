@@ -2,20 +2,20 @@
 Campaign Planner Agent Example
 
 This example demonstrates how to build a campaign planning agent
-that integrates with BigRipple using the wavemaker-agent-framework.
+using the simplified Strands-based wavemaker-agent-framework.
 """
 
-import asyncio
-from openai import AsyncOpenAI
+import os
+from dotenv import load_dotenv
 
-from wavemaker_agent_framework.core import (
-    AgentRuntime,
-    AgentExecutionInput,
-    AgentExecutionOutput,
-    create_default_runtime,
+from wavemaker_agent_framework import (
+    BigRippleAgent,
+    EntityContext,
+    BrandSummary,
+    BrandVoice,
+    create_campaign,
+    create_content,
 )
-from wavemaker_agent_framework.context import EntityContext, BrandSummary, BrandVoice
-from wavemaker_agent_framework.tools.bigripple import create_bigripple_registry
 
 
 # System prompt for the campaign planner
@@ -31,56 +31,12 @@ When creating campaigns:
 1. Consider the brand's tone and style guidelines
 2. Suggest appropriate channels based on the target audience
 3. Create campaigns with clear goals and descriptions
-4. Recommend content types for each channel
+4. Also create initial content pieces for each channel
 
 You have access to tools to create campaigns and content in BigRipple.
 Always use the provided brand_id when creating entities.
 
 After creating a campaign, summarize what you created and suggest next steps."""
-
-
-async def run_campaign_planner(
-    prompt: str,
-    context: EntityContext,
-    openai_api_key: str | None = None,
-) -> AgentExecutionOutput:
-    """
-    Run the campaign planner agent.
-
-    Args:
-        prompt: User's campaign planning request
-        context: Entity context from BigRipple
-        openai_api_key: Optional OpenAI API key (uses env var if not provided)
-
-    Returns:
-        AgentExecutionOutput with created campaigns and content
-    """
-    # Create OpenAI client
-    client = AsyncOpenAI(api_key=openai_api_key)
-
-    # Create runtime with BigRipple tools
-    runtime = create_default_runtime(client, include_bigripple_tools=True)
-
-    # Prepare execution input
-    input_data = AgentExecutionInput(
-        input_data={"prompt": prompt},
-        context=context,
-        execution_id=f"campaign_planner_{context.user_id}",
-        system_prompt=CAMPAIGN_PLANNER_PROMPT,
-        enabled_tools=[
-            "bigripple.campaign.create",
-            "bigripple.content.create",
-            "bigripple.knowledge.search",
-            "bigripple.knowledge.guidelines",
-        ],
-        model="gpt-4o",
-        temperature=0.7,
-    )
-
-    # Execute the agent
-    result = await runtime.execute(input_data)
-
-    return result
 
 
 def create_sample_context() -> EntityContext:
@@ -108,10 +64,21 @@ def create_sample_context() -> EntityContext:
     )
 
 
-async def main():
+def main():
     """Run the campaign planner example."""
-    print("Campaign Planner Agent Example")
+    # Load environment variables
+    load_dotenv(os.path.expanduser("~/Projects/big-ripple/.env"))
+
+    print("Campaign Planner Agent Example (Strands SDK)")
     print("=" * 50)
+
+    # Create the agent with BigRipple tools
+    agent = BigRippleAgent(
+        system_prompt=CAMPAIGN_PLANNER_PROMPT,
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model_id="gpt-4o",
+        tools=[create_campaign, create_content],
+    )
 
     # Create sample context
     context = create_sample_context()
@@ -127,6 +94,8 @@ async def main():
 
     Target channels: LinkedIn, Twitter, and Email
     Launch date: Next Monday
+
+    Please create the campaign AND 3 initial content pieces (one for each channel).
     """
 
     print(f"\nUser Prompt:\n{prompt}")
@@ -134,23 +103,23 @@ async def main():
 
     # Run the agent
     try:
-        result = await run_campaign_planner(prompt, context)
+        result = agent.run(
+            prompt=prompt,
+            context=context,
+            execution_id="campaign_planner_demo",
+        )
 
         if result.success:
             print("\nAgent Output:")
             print(result.output)
-            print(f"\nToken Usage: {result.tokens_used}")
-            print(f"Duration: {result.duration_ms}ms")
+            print(f"\nDuration: {result.duration_ms}ms")
 
             if result.entity_operations:
                 print(f"\nEntity Operations ({len(result.entity_operations)}):")
                 for i, op in enumerate(result.entity_operations, 1):
-                    print(f"  {i}. {op['type']}: {op.get('data', {}).get('name', 'N/A')}")
-
-            if result.tool_calls:
-                print(f"\nTool Calls ({len(result.tool_calls)}):")
-                for call in result.tool_calls:
-                    print(f"  - {call['name']}")
+                    op_type = op.get("type", "unknown")
+                    name = op.get("data", {}).get("name") or op.get("data", {}).get("title", "N/A")
+                    print(f"  {i}. {op_type}: {name}")
         else:
             print(f"\nAgent Error: {result.error}")
 
@@ -160,4 +129,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
